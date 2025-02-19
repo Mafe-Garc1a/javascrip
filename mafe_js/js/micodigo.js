@@ -187,16 +187,21 @@ prestarEquipos.addEventListener("click" , ()=> {
                     localStorage.setItem('marcasPres', JSON.stringify(marcasPrestadas));
                     localStorage.setItem('cantidadPres', JSON.stringify(cantidadPrestada));
                     localStorage.setItem('InstruPres', JSON.stringify(instructoresPrestan));
+                    
                 }else{
                     console.log("no encontrado");
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "No esta registrado este instrutor!",
-                        footer: '<a href="#">Why do I have this issue?</a>'
-                    });
-                }
-            }
+                    let verificar3= identificacionInstructores.indexOf(idPresta);
+                    if(verificar3==-1){
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "No esta registrado este instrutor!",
+                            footer: '<a href="#">Why do I have this issue?</a>'
+                        });
+                    }  
+        };
+        
+    };
     
 });
 
