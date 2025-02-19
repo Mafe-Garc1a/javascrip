@@ -1,6 +1,10 @@
-let equipos = [];
-let marcas = [];
-let stock = [];
+
+
+const equipos = JSON.parse(localStorage.getItem("equipos")) || [];
+const marcas =  JSON.parse(localStorage.getItem("marcas")) || [];
+const stock =  JSON.parse(localStorage.getItem("stock")) || [];
+
+imprimirEquipos();
 
 //cambiar por modales los prompt
 const addEquipo= document.getElementById("addEquipos");
@@ -33,12 +37,15 @@ addEquipo.addEventListener("click" ,()=>{
             equipos.push(nombreEquipo);
             marcas.push(marcaEquipo);
             stock.push(cantidadEquipo);
+            
         };
-        nombreEquipo.value=" ";
-        marcaEquipo.value=" ";
-        cantidadEquipo.value=" ";
+        nombreEquipo1.value="";
+        marcaEquipo1.value="";
+        cantidadEquip.value="";
         imprimirEquipos();
-    
+        localStorage.setItem('equipos', JSON.stringify(equipos));
+        localStorage.setItem('marcas', JSON.stringify(marcas));
+        localStorage.setItem('stock', JSON.stringify(stock));
 } );
 
 
@@ -64,9 +71,9 @@ for (let i=0 ; i<equipos.length ; i++){
 
 }
 
-let nombresInstructores = [];
-let identificacionInstructores = [];
-
+const nombresInstructores = JSON.parse(localStorage.getItem("nombresInstru")) ||[];
+const identificacionInstructores =JSON.parse(localStorage.getItem("identificacionInstru")) || [];
+imprimirInstructores();
 const addInstructor=document.getElementById("addInstructor");
 addInstructor.addEventListener("click" , ()=>{
     const inputID = document.getElementById('inputIdInstructor');
@@ -92,6 +99,8 @@ addInstructor.addEventListener("click" , ()=>{
     inputNombre.value = '';
 
     imprimirInstructores();
+    localStorage.setItem('nombresInstru', JSON.stringify(nombresInstructores));
+    localStorage.setItem('identificacionInstru', JSON.stringify(identificacionInstructores));
 });
 
 
@@ -110,16 +119,18 @@ function imprimirInstructores(){
     };
 };
 
-let equiposPrestados = [];
-let marcasPrestadas = [];
-let cantidadPrestada = [];
-let instructoresPrestan = [];
-
+let equiposPrestados = JSON.parse(localStorage.getItem("equiposPres")) || [];
+let marcasPrestadas = JSON.parse(localStorage.getItem("marcasPres")) || [];
+let cantidadPrestada =  JSON.parse(localStorage.getItem("cantidadPres")) ||[];
+let instructoresPrestan =  JSON.parse(localStorage.getItem("InstruPres")) ||[];
+imprimirPrestamos();
 const prestarEquipos= document.getElementById("prestarEquipos");
 prestarEquipos.addEventListener("click" , ()=> {
+    
     const equipoPrestar = document.getElementById("equipoPrestar").value;
     const marcaPrestar = document.getElementById("marcaPrestar").value;
     console.log(equipoPrestar, marcaPrestar);
+    
     let captura = -1;
     // El ciclo recorre todo el arreglo para poder buscar el nuevo equipo
     for (let i = 0; i < equipos.length; i++) {
@@ -128,50 +139,65 @@ prestarEquipos.addEventListener("click" , ()=> {
             captura = i;
         };
     };
-
-    if (captura == -1) {
-        Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "El equipo no existe!",
-            footer: '<a href="#">Why do I have this issue?</a>'
-        });
-    } else {
-        const cantidadPresta = document.getElementById("cantidadPrestar");
-        let cantidadPrestar = parseInt(cantidadPresta.value);
-        if (cantidadPrestar <= stock[captura]) {
-            let captura2 = -1;
-
-            const idPresta = document.getElementById("instructorPrestar").value;
-
-            for (let i = 0; i < equiposPrestados.length; i++) {
-                if (idPresta == instructoresPrestan[i] && equipoPrestar == equiposPrestados[i] && marcaPrestar == marcasPrestadas[i]) {
-                    captura2 = i;
-                };
-            };
-
-            if (captura2 == -1) {
-                instructoresPrestan.push(idPresta);
-                equiposPrestados.push(equipoPrestar);
-                marcasPrestadas.push(marcaPrestar);
-                cantidadPrestada.push(cantidadPrestar);
-            } else {
-                cantidadPrestada[captura2] += cantidadPrestar;
+    const idPresta = document.getElementById("instructorPrestar").value;
+            for(let j=0 ; j<identificacionInstructores.length ; j++ ){
+                if(idPresta==identificacionInstructores[j]){
+                    if (captura == -1) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "El equipo no existe!",
+                            footer: '<a href="#">Why do I have this issue?</a>'
+                        });
+                    } else {
+                        const cantidadPresta = document.getElementById("cantidadPrestar");
+                        let cantidadPrestar = parseInt(cantidadPresta.value);
+                        if (cantidadPrestar <= stock[captura]) {
+                            let captura2 = -1;
+                
+                            
+                
+                            for (let i = 0; i < equiposPrestados.length; i++) {
+                                if (idPresta == instructoresPrestan[i] && equipoPrestar == equiposPrestados[i] && marcaPrestar == marcasPrestadas[i]) {
+                                    captura2 = i;
+                                };
+                            };
+                
+                            if (captura2 == -1) {
+                                instructoresPrestan.push(idPresta);
+                                equiposPrestados.push(equipoPrestar);
+                                marcasPrestadas.push(marcaPrestar);
+                                cantidadPrestada.push(cantidadPrestar);
+                                
+                            } else {
+                                cantidadPrestada[captura2] += cantidadPrestar;
+                            };
+                
+                            stock[captura] -= cantidadPrestar;
+                        } else {
+                            
+                        };
+                        
+                    };
+                    equipoPrestar.value="";
+                    marcaPrestar.value="";
+                    imprimirPrestamos();
+                    imprimirEquipos();
+                    localStorage.setItem('equiposPres', JSON.stringify(equiposPrestados));
+                    localStorage.setItem('marcasPres', JSON.stringify(marcasPrestadas));
+                    localStorage.setItem('cantidadPres', JSON.stringify(cantidadPrestada));
+                    localStorage.setItem('InstruPres', JSON.stringify(instructoresPrestan));
+                }else{
+                    console.log("no encontrado");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "No esta registrado este instrutor!",
+                        footer: '<a href="#">Why do I have this issue?</a>'
+                    });
+                }
             }
-
-            stock[captura] -= cantidadPrestar;
-        } else {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "No hay cantidad suficiente!",
-                footer: '<a href="#">Why do I have this issue?</a>'
-            });
-        }
-    };
-    imprimirPrestamos();
-    imprimirEquipos();
-    console.log(equiposPrestados);
+    
 });
 
 
@@ -182,22 +208,19 @@ function imprimirPrestamos(){
         const fila = document.createElement("tr");
         for (let f=0 ; 4>=f ; f++){
             const td= document.createElement("td");
-            (f==0) ? td.textContent = equiposPrestados[i] : false;
-            (f==1) ? td.textContent = marcasPrestadas[i] : false;
-            (f==2) ? td.textContent = cantidadPrestada[i] : false;
-            (f==3) ? td.textContent = instructoresPrestan[i] : false;
+            (f==0) ? td.textContent = instructoresPrestan[i] : false;
+            (f==1) ? td.textContent = equiposPrestados[i] : false;
+            (f==2) ? td.textContent = marcasPrestadas[i] : false;
+            (f==3) ? td.textContent = cantidadPrestada[i] : false;
             fila.appendChild(td);
         };
         tbodyPrestamos.appendChild(fila);
     };
     console.log(equiposPrestados);
 };
-const devolverPrestamo =document.getElementById("devolvr");
+const devolverPrestamo =document.getElementById("devolver");
 devolverPrestamo.addEventListener("click" , ()=>{
-
-});
-function devolverPrestamo(){
-    const idInstructor = document.getElementById("instructorPrestar2").value;;
+    const idInstructor = document.getElementById("instructorPrestar2").value;
     const nombreEquipo = document.getElementById("nombreEquipo2").value;
     const marcaEquipo = document.getElementById("MarcaEquipo2").value;
     let captura = -1;
@@ -216,7 +239,9 @@ function devolverPrestamo(){
             footer: '<a href="#">Why do I have this issue?</a>'
             });
     }else{
-        let cantidadDevolver = parseInt(document.getElementById("cantidadEquipo2").value);
+        let cantidadDevolver1 = document.getElementById("cantidadEquipo2");
+        let cantidadDevolver=parseInt(cantidadDevolver1.value);
+        console.log(cantidadDevolver);
         if(cantidadDevolver <= cantidadPrestada[captura]){
             cantidadPrestada[captura] -= cantidadDevolver;
             if (cantidadPrestada[captura] == 0){
@@ -225,7 +250,7 @@ function devolverPrestamo(){
                 equiposPrestados.splice(captura, 1);
                 marcasPrestadas.splice(captura, 1);
                 cantidadPrestada.splice(captura, 1);
-            }
+            };
             for(let i = 0; i < equipos.length; i++){
                 // si el equipo y la marca ya estan en los arreglos captura en que indice
                 if (nombreEquipo == equipos[i] && marcaEquipo == marcas[i]){
@@ -240,8 +265,16 @@ function devolverPrestamo(){
                 text: "la cantidad supera lo que prestaste!",
                 footer: '<a href="#">Why do I have this issue?</a>'
             });
-        }
-    }
+        };
+    };
     imprimirPrestamos();
     imprimirEquipos();
+});
+function limpiar(){
+    equipos=[];
+    marcas=[];
+    stock=[];
+    nombresInstructores=[];
+    identificacionInstructores=[];
+    
 };
